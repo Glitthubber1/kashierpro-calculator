@@ -1,0 +1,720 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>KashierPro Plan Finder</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: navy header with language and VAT switches, an offers band (starter pack + free year), then two columns. Left = what the business needs (size, features, hardware). Right = the priced verdict, all four plans compared by total cost, and a WhatsApp strip. Stacks on phones. Mirrors fully in Arabic (dir=rtl). */
+:root {
+  --brand: #1a3c6e;
+  --brand-fg: #ffffff;
+  --brand-soft: rgba(255, 255, 255, 0.16);
+  --bg: #edf1f7;
+  --surface: #ffffff;
+  --fg: #10233f;
+  --muted: #55627a;
+  --line: #d5dce8;
+  --accent: #1a3c6e;
+  --accent-fg: #ffffff;
+  --accent-soft: #e2eaf6;
+  --good: #1b7a4b;
+  --good-soft: #def2e6;
+  --warn: #9a5b00;
+  --warn-soft: #fbecd0;
+  --offer: #8a5a00;
+  --offer-soft: #fdf1d6;
+  --wa: #0f7a42;
+  --f-head: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --f-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-ar: "Noto Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0a1325; --surface: #121e36; --fg: #e7ecf6; --muted: #97a4bd; --line: #263451;
+    --accent: #7fa6e8; --accent-fg: #0a1325; --accent-soft: #1b2c4f;
+    --good: #6fd19a; --good-soft: #17342a; --warn: #f0b95c; --warn-soft: #3a2d12;
+    --offer: #f0c36a; --offer-soft: #33280f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0a1325; --surface: #121e36; --fg: #e7ecf6; --muted: #97a4bd; --line: #263451;
+  --accent: #7fa6e8; --accent-fg: #0a1325; --accent-soft: #1b2c4f;
+  --good: #6fd19a; --good-soft: #17342a; --warn: #f0b95c; --warn-soft: #3a2d12;
+  --offer: #f0c36a; --offer-soft: #33280f;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 15px; line-height: 1.5;
+  padding-block: 24px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1060px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+.wrap[lang="ar"] { font-family: var(--f-ar), var(--f-body); line-height: 1.7; }
+.wrap[lang="ar"] h1, .wrap[lang="ar"] h2, .wrap[lang="ar"] h3, .wrap[lang="ar"] .mark,
+.wrap[lang="ar"] .plan .name, .wrap[lang="ar"] .big b, .wrap[lang="ar"] .pk b { font-family: var(--f-ar), var(--f-head); letter-spacing: 0; }
+.wrap[lang="ar"] h2, .wrap[lang="ar"] .kicker, .wrap[lang="ar"] .tag { text-transform: none; letter-spacing: 0; }
+h1, h2, h3 { font-family: var(--f-head); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h2 { font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); font-weight: 600; }
+.wrap[lang="ar"] h2 { font-size: 14px; }
+.alt[lang="ar"] { font-family: var(--f-ar); }
+button, a.btn { font: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid #2e6bd0; outline-offset: 2px; }
+
+.hero { background: var(--brand); color: var(--brand-fg); border-radius: 10px; padding: 24px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px 24px; align-items: end; border-bottom: 4px solid #4f86e0; }
+@media (max-width: 640px) { .hero { grid-template-columns: minmax(0, 1fr); } }
+.brandrow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 10px; }
+.mark { font-family: var(--f-head); font-weight: 700; font-size: 17px; letter-spacing: 0.01em; }
+.mark.ar { font-family: var(--f-ar); font-size: 16px; opacity: 0.9; }
+.tag { font-size: 11px; text-transform: uppercase; letter-spacing: 0.09em; border: 1px solid var(--brand-soft); border-radius: 999px; padding: 2px 10px; opacity: 0.9; }
+.hero h1 { font-size: 30px; line-height: 1.2; }
+.hero p { margin: 8px 0 0; opacity: 0.9; max-width: 60ch; }
+.ctl { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.seg { display: inline-flex; border: 1px solid var(--brand-soft); border-radius: 8px; overflow: hidden; }
+.seg button { background: transparent; color: var(--brand-fg); border: 0; padding: 8px 14px; font-size: 13px; font-weight: 500; }
+.seg button[aria-pressed="true"] { background: var(--brand-fg); color: var(--brand); font-weight: 600; }
+.seg button:not([aria-pressed="true"]):hover { background: var(--brand-soft); }
+
+.offers { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 860px) { .offers { grid-template-columns: minmax(0, 1fr); } }
+.offer { background: var(--offer-soft); border: 1px solid var(--offer); border-radius: 10px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.offer .okick { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--offer); }
+.wrap[lang="ar"] .offer .okick { text-transform: none; letter-spacing: 0; font-size: 13px; }
+.offer h3 { font-size: 20px; }
+.offer p { margin: 0; color: var(--muted); font-size: 13.5px; max-width: 58ch; }
+.pk { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 10px; border-top: 1px solid var(--line); }
+.pk b { font-family: var(--f-head); font-size: 22px; font-variant-numeric: tabular-nums; }
+.pk small { display: block; color: var(--muted); font-size: 12.5px; }
+.obtn { background: var(--accent); color: var(--accent-fg); border: 0; border-radius: 8px; padding: 8px 14px; font-weight: 600; font-size: 13.5px; }
+.obtn:hover { filter: brightness(1.1); }
+.obtn[aria-pressed="true"] { background: var(--good-soft); color: var(--good); }
+.obtn.alt2 { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+
+.grid { display: grid; grid-template-columns: minmax(0, 400px) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.group { display: flex; flex-direction: column; gap: 10px; }
+.presets { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 1px solid var(--line); background: var(--bg); color: var(--fg); border-radius: 999px; padding: 6px 12px; font-size: 13px; transition: border-color .15s, background .15s; }
+.chip:hover { border-color: var(--accent); }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.stepper-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 0; }
+.stepper-row label { font-weight: 500; min-width: 0; }
+.stepper-row small { display: block; color: var(--muted); font-weight: 400; font-size: 12px; }
+.stepper { display: flex; align-items: center; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; flex: none; direction: ltr; }
+.stepper button { width: 36px; height: 36px; border: 0; background: var(--bg); color: var(--fg); font-size: 18px; line-height: 1; transition: background .12s; }
+.stepper button:hover { background: var(--accent-soft); }
+.stepper button:active { background: var(--accent); color: var(--accent-fg); }
+.stepper output { min-width: 42px; text-align: center; font-variant-numeric: tabular-nums; font-weight: 600; }
+.stepper-row.on label { color: var(--accent); }
+.checks { display: flex; flex-direction: column; gap: 2px; }
+.check { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; cursor: pointer; }
+.check input { margin-top: 5px; width: 16px; height: 16px; accent-color: var(--accent); flex: none; }
+.check span small { display: block; color: var(--muted); font-size: 12px; }
+.check.locked { cursor: default; }
+.check .inc { margin-inline-start: 6px; font-size: 11px; font-weight: 600; color: var(--good); background: var(--good-soft); border-radius: 999px; padding: 1px 8px; white-space: nowrap; }
+select { font: inherit; padding: 9px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); width: 100%; }
+.hint { font-size: 12.5px; color: var(--warn); background: var(--warn-soft); border-radius: 6px; padding: 6px 10px; }
+.seatnote { font-size: 12.5px; color: var(--muted); background: var(--accent-soft); border-radius: 6px; padding: 8px 10px; margin: 0; }
+
+.right { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.verdict { background: var(--brand); color: var(--brand-fg); border-radius: 10px; padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+.kicker { font-size: 12px; text-transform: uppercase; letter-spacing: 0.09em; opacity: 0.8; font-weight: 600; }
+.verdict h3 { font-size: 28px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
+.verdict h3 .alt { font-size: 18px; font-weight: 600; opacity: 0.85; }
+.verdict h3 .pill { font-size: 12px; align-self: center; }
+.big { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; font-variant-numeric: tabular-nums; }
+.big b { font-family: var(--f-head); font-size: 44px; line-height: 1.1; font-weight: 700; }
+.big span.per { opacity: 0.85; }
+.lines { display: flex; flex-direction: column; border-top: 1px solid var(--brand-soft); }
+.line { display: flex; justify-content: space-between; gap: 16px; padding: 7px 0; border-bottom: 1px solid var(--brand-soft); font-variant-numeric: tabular-nums; font-size: 14px; }
+.line span { min-width: 0; }
+.line b { font-weight: 600; white-space: nowrap; }
+.line.gift b { color: #8fe0b4; }
+.verdict.nofit .line.gift b { color: var(--good); }
+.verdict p { margin: 0; opacity: 0.92; max-width: 62ch; }
+.meters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 520px) { .meters { grid-template-columns: minmax(0, 1fr); } }
+.meter { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.meter .row { display: flex; justify-content: space-between; gap: 8px; font-variant-numeric: tabular-nums; }
+.mbar { height: 6px; border-radius: 3px; background: var(--brand-soft); overflow: hidden; }
+.mbar i { display: block; height: 100%; background: #8fb6f5; transition: width .3s; }
+.included { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 6px 16px; font-size: 13.5px; }
+.included li { display: flex; gap: 8px; align-items: flex-start; min-width: 0; }
+.included .tick { flex: none; width: 18px; height: 18px; border-radius: 50%; background: #8fe0b4; color: #0d3a24; font-size: 12px; font-weight: 700; display: grid; place-items: center; margin-top: 3px; }
+.included li.off { opacity: 0.55; }
+.included li.off .tick { background: transparent; border: 1px solid var(--brand-soft); color: inherit; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { background: var(--brand-fg); color: var(--brand); border: 0; border-radius: 8px; padding: 9px 14px; font-weight: 600; font-size: 13.5px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+.btn.ghost { background: transparent; color: var(--brand-fg); border: 1px solid var(--brand-soft); }
+.btn.wa { background: var(--wa); color: #ffffff; }
+.btn:hover { filter: brightness(0.93); }
+.btn.ghost:hover { background: var(--brand-soft); filter: none; }
+.verdict.nofit { background: var(--warn-soft); color: var(--fg); border: 1px solid var(--warn); }
+.verdict.nofit .kicker { color: var(--warn); opacity: 1; }
+.verdict.nofit .line, .verdict.nofit .lines { border-color: var(--line); }
+.verdict.nofit .btn:not(.wa) { background: var(--brand); color: var(--brand-fg); }
+.verdict.nofit .btn.ghost { background: transparent; color: var(--fg); border-color: var(--line); }
+.toast { min-height: 18px; font-size: 13px; color: var(--muted); margin-top: -6px; }
+#fallback { width: 100%; min-height: 120px; font: inherit; font-size: 13px; padding: 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
+
+.plans { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; }
+.plans-head { padding: 12px 18px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.plans-head span { color: var(--muted); font-size: 12.5px; }
+.plan { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 2fr) auto; gap: 6px 16px; padding: 14px 18px; border-top: 1px solid var(--line); align-items: center; cursor: pointer; transition: background .15s; }
+.plan:hover { background: var(--accent-soft); }
+.plan.focus { background: var(--accent-soft); box-shadow: inset 4px 0 0 var(--accent); }
+.wrap[dir="rtl"] .plan.focus { box-shadow: inset -4px 0 0 var(--accent); }
+@media (max-width: 640px) { .plan { grid-template-columns: minmax(0, 1fr) auto; } .plan .detail { grid-column: 1 / -1; order: 3; } }
+.plan .name { font-family: var(--f-head); font-weight: 600; font-size: 17px; }
+.plan .name .alt { font-size: 14px; color: var(--muted); font-weight: 500; margin-inline-start: 8px; }
+.plan .caps { color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.plan .detail { font-size: 13px; min-width: 0; display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
+.plan .detail .gaps { flex-basis: 100%; }
+.plan .cost { text-align: end; font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+.plan .cost small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; white-space: normal; }
+.plan .tbar { grid-column: 1 / -1; height: 5px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.plan .tbar i { display: block; height: 100%; background: var(--accent); transition: width .35s; }
+.plan.nofit .tbar i { background: var(--warn); }
+.pill { display: inline-block; border-radius: 999px; padding: 2px 10px; font-size: 12px; font-weight: 600; }
+.pill.ok { background: var(--good-soft); color: var(--good); }
+.pill.no { background: var(--warn-soft); color: var(--warn); }
+.pill.gift { background: var(--offer-soft); color: var(--offer); }
+.gaps { margin-top: 4px; color: var(--muted); }
+.contact { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 20px; }
+.contact h3 { font-size: 17px; }
+.contact p { margin: 4px 0 0; color: var(--muted); font-size: 13.5px; max-width: 52ch; }
+.contact .num { font-family: var(--f-head); font-weight: 600; font-size: 18px; margin-top: 6px; font-variant-numeric: tabular-nums; user-select: all; }
+.note { color: var(--muted); font-size: 12.5px; line-height: 1.55; margin: 0; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap" id="app" dir="ltr" lang="en">
+  <header class="hero">
+    <div>
+      <div class="brandrow"><span class="mark">KashierPro</span><span class="mark ar" lang="ar">كاشير برو</span><span class="tag" data-t="tag"></span></div>
+      <h1 data-t="h1"></h1>
+      <p data-t="lead"></p>
+    </div>
+    <div class="ctl">
+      <div class="seg" role="group" aria-label="Language / اللغة">
+        <button type="button" id="lang-en" aria-pressed="true" lang="en">English</button>
+        <button type="button" id="lang-ar" aria-pressed="false" lang="ar">العربية</button>
+      </div>
+      <div class="seg" role="group" id="vatseg">
+        <button type="button" id="vat-on" aria-pressed="true" data-t="vatOn"></button>
+        <button type="button" id="vat-off" aria-pressed="false" data-t="vatOff"></button>
+      </div>
+    </div>
+  </header>
+
+  <section class="offers" id="offers"></section>
+
+  <div class="grid">
+    <section class="panel">
+      <div class="group">
+        <h2 data-t="hExamples"></h2>
+        <div class="presets" id="presets"></div>
+      </div>
+
+      <div class="group">
+        <h2 data-t="hSize"></h2>
+        <div id="steppers"></div>
+        <p class="seatnote" id="seatnote"></p>
+      </div>
+
+      <div class="group">
+        <h2 data-t="hBasics"></h2>
+        <div class="checks" id="basics"></div>
+      </div>
+
+      <div class="group">
+        <h2 data-t="hFeatures"></h2>
+        <div class="checks" id="checks"></div>
+      </div>
+
+      <div class="group">
+        <h2 data-t="hSupport"></h2>
+        <label for="support" class="note" data-t="supportLabel"></label>
+        <select id="support">
+          <option value="1"></option>
+          <option value="2"></option>
+          <option value="3"></option>
+        </select>
+      </div>
+
+      <div class="group">
+        <h2 data-t="hHw"></h2>
+        <div id="hw"></div>
+        <div class="hint" id="hwnote" data-t="hwNote" hidden></div>
+      </div>
+    </section>
+
+    <section class="right" aria-live="polite">
+      <div id="verdict"></div>
+      <div class="toast" id="toast" role="status"></div>
+      <textarea id="fallback" readonly hidden aria-label="Summary"></textarea>
+      <div class="plans" id="plans"></div>
+      <div class="contact" id="contact"></div>
+      <p class="note" id="foot"></p>
+    </section>
+  </div>
+</div>
+
+<script id="logic">
+const VAT = 0.15;
+const PLANS = [
+  { id: "start",    name: "Launch",   ar: "باقة الانطلاق", price: 600,  branches: 1, devices: 1, users: 2,  support: 1, paidSeats: true,  bonus: false, features: [] },
+  { id: "growth",   name: "Growth",   ar: "باقة النمو",    price: 1000, branches: 1, devices: 2, users: 4,  support: 1, paidSeats: true,  bonus: false, features: ["invoices", "stockOrders", "discounts"] },
+  { id: "control",  name: "Control",  ar: "باقة التحكم",   price: 1300, branches: 1, devices: 3, users: 7,  support: 2, paidSeats: false, bonus: true,  features: ["invoices", "stockOrders", "discounts", "autoStock", "loyalty", "kds"] },
+  { id: "business", name: "Business", ar: "باقة الأعمال",  price: 1650, branches: 3, devices: 5, users: 10, support: 3, paidSeats: false, bonus: true,  features: ["invoices", "stockOrders", "discounts", "autoStock", "loyalty", "kds", "accounting", "reps"] }
+];
+const FEATURE_IDS = ["invoices", "stockOrders", "discounts", "autoStock", "loyalty", "kds", "accounting", "reps"];
+// Prices below are final totals including 15% VAT.
+const BRANCH_EXTRA = { start: 690, other: 300 };
+const SEAT_PRICE = 50;            // extra user or extra point of sale on Launch and Growth
+const STARTER_PACK_TOTAL = 1780;  // tablet + Launch plan + USB printer
+const HARDWARE = [
+  { id: "tablet", price: 870 },
+  { id: "ezpos",  price: 1550 },
+  { id: "usb",    price: 250 },
+  { id: "bt",     price: 550 }
+];
+const hwPrice = id => HARDWARE.find(h => h.id === id).price;
+const LAUNCH_INC = 600 * 115 / 100;
+const STARTER_LIST = LAUNCH_INC + hwPrice("tablet") + hwPrice("usb");
+const STARTER_SAVING = Math.max(0, STARTER_LIST - STARTER_PACK_TOTAL);
+const EZPOS_PACK_TOTAL = LAUNCH_INC + hwPrice("ezpos");
+
+function evaluate(needs) {
+  const hw = needs.hw || {};
+  const hwTotal = HARDWARE.reduce((s, h) => s + h.price * (hw[h.id] || 0), 0);
+  const rows = PLANS.map(p => {
+    const gaps = [];
+    let extraDevices = Math.max(0, needs.devices - p.devices);
+    let extraUsers = Math.max(0, needs.users - p.users);
+    if (extraDevices && !p.paidSeats) {            // Control and Business: extra points of sale are not offered
+      gaps.push({ k: "devices", need: needs.devices, have: p.devices });
+      extraDevices = 0;
+    }
+    needs.features.forEach(f => { if (!p.features.includes(f)) gaps.push({ k: "feature", id: f }); });
+    if (needs.support > p.support) gaps.push({ k: "support", level: needs.support });
+    const extraBranches = Math.max(0, needs.branches - p.branches);
+    const branchUnit = p.id === "start" ? BRANCH_EXTRA.start : BRANCH_EXTRA.other;
+    const branchCost = extraBranches * branchUnit;
+    const deviceCost = p.paidSeats ? extraDevices * SEAT_PRICE : 0;
+    const userCost = p.paidSeats ? extraUsers * SEAT_PRICE : 0;   // extra users are free on Control and Business
+    const subInc = p.price * 115 / 100;
+    const packSaving = (p.id === "start" && (hw.tablet || 0) >= 1 && (hw.usb || 0) >= 1) ? STARTER_SAVING : 0;
+    const totalInc = subInc + branchCost + deviceCost + userCost + hwTotal - packSaving;
+    return { plan: p, gaps, fits: gaps.length === 0, extraBranches, branchUnit, branchCost, extraDevices, deviceCost, extraUsers, userCost, packSaving, subInc, hwTotal, totalInc };
+  });
+  const fitting = rows.filter(r => r.fits);
+  const pick = fitting.length ? fitting.reduce((a, b) => (b.totalInc < a.totalInc ? b : a)) : null;
+  const closest = pick ? null : rows.slice().sort((a, b) => a.gaps.length - b.gaps.length || b.totalInc - a.totalInc)[0];
+  return { rows, pick, closest, hwTotal };
+}
+</script>
+
+<script>
+const PHONE_INTL = "966578858297", PHONE_SHOW = "+966 57 885 8297";
+const I = {
+  en: {
+    dir: "ltr", cur: "SAR", sep: "; ", free: "Free",
+    tag: "Unofficial estimator", h1: "Which KashierPro plan do you need?",
+    lead: "Set your branches, tills, staff, features and hardware. The page prices every plan and picks the cheapest one that covers you.",
+    vatOn: "With VAT", vatOff: "Before VAT", vatAria: "Price display",
+    hExamples: "Start from an example", hSize: "Size", hBasics: "Included in every plan", hFeatures: "Extra features", hSupport: "Support", hHw: "Hardware (optional)",
+    supportLabel: "Minimum support level",
+    examples: ["One-counter cafe", "Restaurant with kitchen", "Retail shop", "Three-branch chain"],
+    branches: "Branches", devices: "Cashier devices", devicesHint: "Points of sale (نقطة بيع) running the app", users: "Users", usersHint: "Staff logins",
+    branchHint: (a, b) => "Extra branches: " + a + " each (" + b + " on Launch)",
+    seatInfo: a => "Extra users or points of sale cost " + a + " each on Launch and Growth. On Control and Business, extra users are free.",
+    less: l => "Fewer " + l.toLowerCase(), more: l => "More " + l.toLowerCase(),
+    basics: [["Basic POS system", "Sales and cashier invoices"], ["Customer and supplier management", ""], ["Financial and product reports", ""]],
+    inEvery: "In every plan",
+    feat: {
+      invoices: ["Full invoice management", "Launch only has simplified sales invoices"], stockOrders: ["Stock orders", ""], discounts: ["Offers and discounts", ""],
+      autoStock: ["Automatic stock updates", "Stock drops with every sale"], loyalty: ["Customer loyalty", ""], kds: ["Kitchen display screen", ""],
+      accounting: ["Full financial accounting", ""], reps: ["Sales reps and commissions", ""]
+    },
+    supp: { 1: "WhatsApp support", 2: "Direct support", 3: "Priority support" },
+    hw: { tablet: ["Tablet", ""], ezpos: ["Full EZ POS cashier system", "USB printer, EZ POS I3 screen and cashier desk"], usb: ["USB printer for tablet", ""], bt: ["Bluetooth printer for tablet", ""] },
+    each: "each", hwNote: "You chose more tablet printers than tablets.",
+    oOffer: "Offer", oPackTitle: "Starter pack",
+    oPackText: "For one-counter cafes and basic stores: a tablet, the Launch plan and a USB printer in one price.",
+    oPackA: "Tablet + Launch plan + USB printer", oSave: (s, l) => "saves " + s + " against buying separately (" + l + ")",
+    oPackB: "EZ POS system + Launch plan", oPackBn: "Full EZ POS cashier system with the Launch plan",
+    usePack: "Use this pack", packOn: "Applied ✓",
+    oYearTitle: "A whole year free",
+    oYearText: (a, b) => "Control and Business include a bonus second year of subscription at no cost. You pay for year 1 and get 2 years: " + a + " worth of extra subscription on Control, " + b + " on Business.",
+    showPlan: n => "Show " + n,
+    bonusPill: "+1 year free", bonusLine: w => "Bonus year · 2nd year of subscription (worth " + w + ")", covers2: "covers 2 years",
+    packLine: "Starter pack saving",
+    extraU: (n, u) => n + " extra user" + (n > 1 ? "s" : "") + " × " + u,
+    extraUFree: n => n + " extra user" + (n > 1 ? "s" : "") + " · free on this plan",
+    extraD: (n, u) => n + " extra cashier device" + (n > 1 ? "s" : "") + " × " + u,
+    seatNotePaid: a => " Extra users and cashier devices cost " + a + " each.", seatNoteFree: " Extra users are free.",
+    kRec: "Recommended plan", kSel: "Plan you selected", kSelNo: "Plan you selected · does not fully fit", kNone: "No single plan covers this",
+    perYear: v => "per year, " + (v ? "with" : "before") + " 15% VAT",
+    sub: n => "Subscription · " + n,
+    extraB: (n, u) => n + " extra branch" + (n > 1 ? "es" : "") + " × " + u,
+    selFits: "This plan covers what you entered, but it is not the cheapest option.",
+    short: g => "Short on: " + g + ".",
+    recText: "The cheapest plan that covers everything you entered, hardware and extras included.",
+    room: s => " Room to grow: " + s + ".",
+    spareDev: n => n + " spare cashier device" + (n > 1 ? "s" : ""), spareUsr: n => n + " spare user login" + (n > 1 ? "s" : ""), and: " and ",
+    noneText: (n, g, ph) => "The closest is " + n + ", short on: " + g + ". The published plans do not cover this setup, so ask KashierPro sales for a custom quote on " + ph + ".",
+    ofN: (a, b) => a + " of " + b, includes: "What this plan includes", notIn: (f, p) => f + " (not in " + p + ")",
+    copy: "Copy summary", back: "Back to recommended plan", copied: "Summary copied.", selectCopy: "Select the text below and copy it.",
+    allPlans: "All plans, total per year", pickHint: "Select a plan to see its breakdown",
+    covers: "Covers your needs", best: "Best price", falls: "Falls short",
+    caps: q => (q.branches > 1 ? "up to " : "") + q.branches + " branch" + (q.branches > 1 ? "es" : "") + " · " + q.devices + " device" + (q.devices > 1 ? "s" : "") + " · " + q.users + (q.paidSeats ? "" : "+") + " users",
+    perYearShort: "per year", inclExtra: n => " · includes " + n + " extra branch" + (n > 1 ? "es" : ""),
+    gap: g => g.k === "devices" ? "needs " + g.need + " cashier devices, plan has " + g.have
+      : g.k === "feature" ? "no " + I.en.feat[g.id][0].toLowerCase()
+      : I.en.supp[g.level].toLowerCase() + " not included",
+    waBtn: "Chat with the team on WhatsApp", cTitle: "Talk to the KashierPro team",
+    cText: "Your setup is filled into the WhatsApp message, so you can send it as it is.",
+    waIntro: "Hello, I'd like a quote for KashierPro:",
+    foot: "Subscription prices and limits come from kashierpro.com/subscriptions (read 11 Nov 2026). Prices for extra branches, extra users and points of sale, hardware and the starter pack are final totals including 15% VAT; the Before VAT view divides them by 1.15. Extra points of sale are only available on Launch and Growth. The bonus year covers the subscription only, not branches or hardware. This is an unofficial estimate, not an offer from KashierPro or Dkeys, so confirm the final quote with their sales team. Every plan has a 7-day free trial.",
+    sumTitle: "KashierPro estimate (unofficial)", sPlan: "Plan", sBranches: "Branches", sExtra: "extra", sDev: "Cashier devices", sUsers: "Users",
+    sFeat: "Extra features", sSupp: "Support", sHw: "Hardware", sOffers: "Offers", none: "none", sTotal: v => "Total per year " + (v ? "with" : "before") + " VAT",
+    offStarter: "starter pack applied", offBonus: "bonus second year free"
+  },
+  ar: {
+    dir: "rtl", cur: "ر.س", sep: "؛ ", free: "مجاني",
+    tag: "تقدير غير رسمي", h1: "أي باقة كاشير برو تناسبك؟",
+    lead: "حدّد عدد الفروع وأجهزة الكاشير والموظفين والمزايا والأجهزة. تحسب الصفحة سعر كل باقة وتختار أرخص باقة تغطي احتياجك.",
+    vatOn: "شامل الضريبة", vatOff: "قبل الضريبة", vatAria: "عرض الأسعار",
+    hExamples: "ابدأ من مثال", hSize: "الحجم", hBasics: "مضمّن في كل الباقات", hFeatures: "مزايا إضافية", hSupport: "الدعم", hHw: "الأجهزة (اختياري)",
+    supportLabel: "الحد الأدنى لمستوى الدعم",
+    examples: ["مقهى بكاشير واحد", "مطعم بمطبخ", "متجر تجزئة", "سلسلة بثلاثة فروع"],
+    branches: "الفروع", devices: "نقاط البيع (أجهزة الكاشير)", devicesHint: "نقاط البيع التي يعمل عليها التطبيق", users: "المستخدمون", usersHint: "حسابات الموظفين",
+    branchHint: (a, b) => "كل فرع إضافي: " + a + " (" + b + " في باقة الانطلاق)",
+    seatInfo: a => "إضافة مستخدم أو نقطة بيع تكلّف " + a + " لكل واحد في باقتي الانطلاق والنمو. وفي باقتي التحكم والأعمال إضافة المستخدمين مجانية.",
+    less: l => "تقليل " + l, more: l => "زيادة " + l,
+    basics: [["نظام نقاط البيع الأساسي", "فواتير المبيعات والكاشير"], ["إدارة العملاء والموردين", ""], ["التقارير المالية وتقارير المنتجات", ""]],
+    inEvery: "في كل الباقات",
+    feat: {
+      invoices: ["إدارة شاملة للفواتير", "باقة الانطلاق فيها فواتير مبيعات مبسطة فقط"], stockOrders: ["أوامر المخزون", ""], discounts: ["العروض والخصومات", ""],
+      autoStock: ["تحديث تلقائي للمخزون", "ينقص المخزون مع كل عملية بيع"], loyalty: ["ولاء العملاء", ""], kds: ["شاشة المطبخ", ""],
+      accounting: ["محاسبة مالية شاملة", ""], reps: ["المندوبون والعمولات", ""]
+    },
+    supp: { 1: "دعم فني واتساب", 2: "دعم فني مباشر", 3: "دعم فني بأولوية" },
+    hw: { tablet: ["جهاز لوحي (تابلت)", ""], ezpos: ["نظام كاشير EZ POS كامل", "طابعة USB وشاشة EZ POS I3 ومكتب كاشير"], usb: ["طابعة USB للتابلت", ""], bt: ["طابعة بلوتوث للتابلت", ""] },
+    each: "للقطعة", hwNote: "اخترت طابعات للتابلت أكثر من عدد الأجهزة اللوحية.",
+    oOffer: "عرض", oPackTitle: "باقة البداية",
+    oPackText: "للمقاهي بكاشير واحد والمتاجر البسيطة: جهاز لوحي وباقة الانطلاق وطابعة USB بسعر واحد.",
+    oPackA: "جهاز لوحي + باقة الانطلاق + طابعة USB", oSave: (s, l) => "توفّر " + s + " مقارنة بالشراء منفصلًا (" + l + ")",
+    oPackB: "نظام EZ POS + باقة الانطلاق", oPackBn: "نظام كاشير EZ POS الكامل مع باقة الانطلاق",
+    usePack: "استخدم هذه الباقة", packOn: "مطبّقة ✓",
+    oYearTitle: "سنة كاملة مجانًا",
+    oYearText: (a, b) => "باقتا التحكم والأعمال تشملان سنة ثانية هدية على الاشتراك دون مقابل. تدفع سنة واحدة وتحصل على سنتين: اشتراك إضافي بقيمة " + a + " في باقة التحكم و" + b + " في باقة الأعمال.",
+    showPlan: n => "اعرض " + n,
+    bonusPill: "سنة إضافية مجانًا", bonusLine: w => "سنة هدية · السنة الثانية من الاشتراك (بقيمة " + w + ")", covers2: "تغطي سنتين",
+    packLine: "توفير باقة البداية",
+    extraU: (n, u) => "مستخدمون إضافيون (" + n + ") × " + u,
+    extraUFree: n => "مستخدمون إضافيون (" + n + ") · مجانًا في هذه الباقة",
+    extraD: (n, u) => "نقاط بيع إضافية (" + n + ") × " + u,
+    seatNotePaid: a => " كل مستخدم أو نقطة بيع إضافية بسعر " + a + ".", seatNoteFree: " إضافة المستخدمين مجانية.",
+    kRec: "الباقة المقترحة", kSel: "الباقة التي اخترتها", kSelNo: "الباقة التي اخترتها · لا تغطي كل احتياجك", kNone: "لا توجد باقة واحدة تغطي هذا",
+    perYear: v => "في السنة، " + (v ? "شامل" : "قبل") + " ضريبة 15%",
+    sub: n => "الاشتراك · " + n,
+    extraB: (n, u) => "فروع إضافية (" + n + ") × " + u,
+    selFits: "هذه الباقة تغطي ما أدخلته، لكنها ليست الأرخص.",
+    short: g => "ينقصها: " + g + ".",
+    recText: "أرخص باقة تغطي كل ما أدخلته، بما في ذلك الأجهزة والإضافات.",
+    room: s => " مجال للنمو: " + s + ".",
+    spareDev: n => n + " جهاز كاشير إضافي متاح", spareUsr: n => n + " حساب مستخدم إضافي متاح", and: " و",
+    noneText: (n, g, ph) => "الأقرب هي " + n + " وينقصها: " + g + ". الباقات المنشورة لا تغطي هذا الإعداد، لذا اطلب عرض سعر خاصًا من مبيعات كاشير برو على " + ph + ".",
+    ofN: (a, b) => a + " من " + b, includes: "ما تشمله هذه الباقة", notIn: (f, p) => f + " (غير متوفرة في " + p + ")",
+    copy: "نسخ الملخص", back: "العودة إلى الباقة المقترحة", copied: "تم نسخ الملخص.", selectCopy: "حدّد النص أدناه وانسخه.",
+    allPlans: "كل الباقات، الإجمالي السنوي", pickHint: "اختر باقة لعرض تفاصيلها",
+    covers: "تغطي احتياجك", best: "أفضل سعر", falls: "لا تغطي احتياجك",
+    caps: q => "الفروع: " + (q.branches > 1 ? "حتى " : "") + q.branches + " · الأجهزة: " + q.devices + " · المستخدمون: " + q.users + (q.paidSeats ? "" : "+"),
+    perYearShort: "في السنة", inclExtra: n => " · تشمل " + n + " فرع إضافي",
+    gap: g => g.k === "devices" ? "تحتاج " + g.need + " أجهزة كاشير والباقة فيها " + g.have
+      : g.k === "feature" ? "لا تشمل " + I.ar.feat[g.id][0]
+      : I.ar.supp[g.level] + " غير مشمول",
+    waBtn: "تواصل مع الفريق عبر واتساب", cTitle: "تحدّث مع فريق كاشير برو",
+    cText: "يُضاف إعدادك تلقائيًا إلى رسالة واتساب، فيمكنك إرسالها كما هي.",
+    waIntro: "السلام عليكم، أرغب في عرض سعر لكاشير برو:",
+    foot: "أسعار الاشتراك وحدوده من kashierpro.com/subscriptions (بتاريخ 11 نوفمبر 2026). أسعار الفروع الإضافية والمستخدمين ونقاط البيع الإضافية والأجهزة وباقة البداية هي إجماليات نهائية شاملة ضريبة 15%، ويقسمها عرض «قبل الضريبة» على 1.15. نقاط البيع الإضافية متاحة في باقتي الانطلاق والنمو فقط. السنة الهدية تشمل الاشتراك فقط وليس الفروع أو الأجهزة. هذا تقدير غير رسمي وليس عرضًا من كاشير برو أو ديكيز، لذا أكّد السعر النهائي مع فريق المبيعات لديهم. لكل باقة تجربة مجانية لمدة 7 أيام.",
+    sumTitle: "تقدير كاشير برو (غير رسمي)", sPlan: "الباقة", sBranches: "الفروع", sExtra: "إضافية", sDev: "نقاط البيع", sUsers: "المستخدمون",
+    sFeat: "المزايا الإضافية", sSupp: "الدعم", sHw: "الأجهزة", sOffers: "العروض", none: "بدون", sTotal: v => "الإجمالي السنوي " + (v ? "شامل" : "قبل") + " الضريبة",
+    offStarter: "تطبيق باقة البداية", offBonus: "سنة ثانية هدية"
+  }
+};
+const EXAMPLES = [
+  { branches: 1, devices: 1, users: 2, features: [], support: 1, hw: { tablet: 1, usb: 1 } },
+  { branches: 1, devices: 3, users: 6, features: ["stockOrders", "autoStock", "kds", "discounts"], support: 2, hw: { ezpos: 2, tablet: 1 } },
+  { branches: 1, devices: 2, users: 4, features: ["invoices", "stockOrders", "discounts"], support: 1, hw: { ezpos: 1, tablet: 1 } },
+  { branches: 3, devices: 5, users: 10, features: ["invoices", "autoStock", "loyalty", "accounting"], support: 3, hw: { tablet: 3, ezpos: 2, bt: 1 } }
+];
+const PACKS = {
+  tablet: { hw: { tablet: 1, usb: 1 } },
+  ezpos: { hw: { ezpos: 1 } }
+};
+const state = { lang: (navigator.language || "").toLowerCase().indexOf("ar") === 0 ? "ar" : "en", branches: 1, devices: 2, users: 4, features: ["stockOrders"], support: 1, hw: {}, preset: -1, vat: true, focus: null };
+const $ = id => document.getElementById(id);
+const L = () => I[state.lang];
+const round2 = n => Math.round(n * 100) / 100;
+const money = n => round2(n).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+const show = inc => (state.vat ? inc : inc * 100 / 115);
+const sarText = inc => { const v = show(inc); return (v < 0 ? "−" : "") + money(Math.abs(v)) + " " + L().cur; };
+const sar = inc => "<bdi>" + sarText(inc) + "</bdi>";
+const pname = p => (state.lang === "ar" ? p.ar : p.name);
+const palt = p => '<span class="alt" lang="' + (state.lang === "ar" ? "en" : "ar") + '">' + (state.lang === "ar" ? p.name : p.ar) + "</span>";
+const gapList = r => r.gaps.map(L().gap).join(L().sep);
+let shown = null, raf = 0, focusRow = null;
+
+function stepperRow(g, k, label, hint) {
+  return '<div class="stepper-row" id="row-' + g + '-' + k + '"><label for="v-' + g + '-' + k + '">' + label + '<small' + (g === "n" && k === "branches" ? ' id="h-branches"' : "") + ">" + (hint || "") + "</small></label>" +
+    '<div class="stepper"><button type="button" data-g="' + g + '" data-k="' + k + '" data-d="-1" aria-label="' + L().less(label) + '">−</button>' +
+    '<output id="v-' + g + '-' + k + '"></output>' +
+    '<button type="button" data-g="' + g + '" data-k="' + k + '" data-d="1" aria-label="' + L().more(label) + '">+</button></div></div>';
+}
+
+function bump(ev) {
+  const b = ev.target.closest("button[data-g]"); if (!b) return;
+  const g = b.dataset.g, k = b.dataset.k, d = +b.dataset.d;
+  if (g === "n") state[k] = Math.min(20, Math.max(1, state[k] + d));
+  else state.hw[k] = Math.min(20, Math.max(0, (state.hw[k] || 0) + d));
+  state.preset = -1; syncControls(); render();
+}
+
+function buildControls() {
+  const t = L();
+  $("presets").innerHTML = t.examples.map((e, i) => '<button class="chip" type="button" data-i="' + i + '" aria-pressed="false">' + e + "</button>").join("");
+  $("steppers").innerHTML = stepperRow("n", "branches", t.branches, "") + stepperRow("n", "devices", t.devices, t.devicesHint) + stepperRow("n", "users", t.users, t.usersHint);
+  $("basics").innerHTML = t.basics.map(b => '<label class="check locked"><input type="checkbox" checked disabled><span>' + b[0] + '<span class="inc">' + t.inEvery + "</span>" + (b[1] ? "<small>" + b[1] + "</small>" : "") + "</span></label>").join("");
+  $("checks").innerHTML = FEATURE_IDS.map(id => '<label class="check" for="f-' + id + '"><input type="checkbox" id="f-' + id + '" data-f="' + id + '"><span>' + t.feat[id][0] + (t.feat[id][1] ? "<small>" + t.feat[id][1] + "</small>" : "") + "</span></label>").join("");
+  $("hw").innerHTML = HARDWARE.map(h => stepperRow("hw", h.id, t.hw[h.id][0], (t.hw[h.id][1] ? t.hw[h.id][1] + " · " : "") + '<span data-inc="' + h.price + '"></span> ' + t.each)).join("");
+  const opts = $("support").options; for (let i = 0; i < 3; i++) opts[i].textContent = t.supp[i + 1];
+  document.querySelectorAll("[data-t]").forEach(el => { el.textContent = t[el.dataset.t]; });
+  $("vatseg").setAttribute("aria-label", t.vatAria);
+  $("fallback").setAttribute("aria-label", t.copy);
+}
+
+function applyPack(kind) {
+  Object.assign(state, { branches: 1, devices: 1, users: 2, features: [], support: 1, hw: JSON.parse(JSON.stringify(PACKS[kind].hw)), preset: -1, focus: null });
+  syncControls(); render();
+}
+function packActive(kind) {
+  const w = PACKS[kind].hw;
+  if (state.branches !== 1 || state.devices !== 1 || state.users > 2 || state.features.length || state.support !== 1) return false;
+  return HARDWARE.every(h => (state.hw[h.id] || 0) === (w[h.id] || 0));
+}
+
+function bindEvents() {
+  $("presets").addEventListener("click", ev => {
+    const b = ev.target.closest("button"); if (!b) return;
+    Object.assign(state, JSON.parse(JSON.stringify(EXAMPLES[+b.dataset.i])), { preset: +b.dataset.i, focus: null });
+    syncControls(); render();
+  });
+  $("steppers").addEventListener("click", bump);
+  $("hw").addEventListener("click", bump);
+  $("checks").addEventListener("change", ev => {
+    const f = ev.target.dataset.f; if (!f) return;
+    state.features = ev.target.checked ? state.features.concat(f) : state.features.filter(x => x !== f);
+    state.preset = -1; syncControls(); render();
+  });
+  $("support").addEventListener("change", ev => { state.support = +ev.target.value; state.preset = -1; syncControls(); render(); });
+  $("vat-on").addEventListener("click", () => { state.vat = true; syncControls(); render(); });
+  $("vat-off").addEventListener("click", () => { state.vat = false; syncControls(); render(); });
+  $("lang-en").addEventListener("click", () => setLang("en"));
+  $("lang-ar").addEventListener("click", () => setLang("ar"));
+  $("offers").addEventListener("click", ev => {
+    const b = ev.target.closest("button"); if (!b) return;
+    if (b.dataset.pack) applyPack(b.dataset.pack);
+    if (b.dataset.show) { state.focus = b.dataset.show; render(); }
+  });
+  const toggle = ev => {
+    const p = ev.target.closest(".plan"); if (!p) return;
+    state.focus = state.focus === p.dataset.id ? null : p.dataset.id; render();
+  };
+  $("plans").addEventListener("click", toggle);
+  $("plans").addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); toggle(ev); } });
+  $("verdict").addEventListener("click", ev => {
+    const b = ev.target.closest("button[data-act]"); if (!b) return;
+    if (b.dataset.act === "reset") { state.focus = null; render(); }
+    if (b.dataset.act === "copy") copySummary();
+  });
+}
+
+function setLang(l) {
+  state.lang = l; shown = null;
+  const app = $("app"); app.dir = I[l].dir; app.lang = l;
+  $("lang-en").setAttribute("aria-pressed", String(l === "en"));
+  $("lang-ar").setAttribute("aria-pressed", String(l === "ar"));
+  buildControls(); syncControls(); render();
+}
+
+function syncControls() {
+  const t = L();
+  ["branches", "devices", "users"].forEach(k => { $("v-n-" + k).textContent = state[k]; });
+  HARDWARE.forEach(h => {
+    const q = state.hw[h.id] || 0;
+    $("v-hw-" + h.id).textContent = q;
+    $("row-hw-" + h.id).classList.toggle("on", q > 0);
+  });
+  FEATURE_IDS.forEach(id => { $("f-" + id).checked = state.features.includes(id); });
+  $("support").value = String(state.support);
+  [...$("presets").children].forEach((b, i) => b.setAttribute("aria-pressed", String(i === state.preset)));
+  $("vat-on").setAttribute("aria-pressed", String(state.vat));
+  $("vat-off").setAttribute("aria-pressed", String(!state.vat));
+  document.querySelectorAll("[data-inc]").forEach(el => { el.innerHTML = sar(+el.dataset.inc); });
+  $("h-branches").innerHTML = t.branchHint(sar(BRANCH_EXTRA.other), sar(BRANCH_EXTRA.start));
+  $("seatnote").innerHTML = t.seatInfo(sar(SEAT_PRICE));
+  $("hwnote").hidden = !(((state.hw.usb || 0) + (state.hw.bt || 0)) > (state.hw.tablet || 0));
+}
+
+function tween(el, to) {
+  cancelAnimationFrame(raf);
+  if (shown === null || shown === to || matchMedia("(prefers-reduced-motion: reduce)").matches) { el.textContent = money(to); shown = to; return; }
+  const from = shown, t0 = performance.now();
+  el.textContent = money(from);
+  const step = now => {
+    const k = Math.min(1, (now - t0) / 380), e = 1 - Math.pow(1 - k, 3);
+    shown = from + (to - from) * e; el.textContent = money(shown);
+    if (k < 1) raf = requestAnimationFrame(step); else shown = to;
+  };
+  raf = requestAnimationFrame(step);
+}
+
+function meter(label, used, cap, extra) {
+  const pct = Math.min(100, Math.round(used / cap * 100));
+  return '<div class="meter"><div class="row"><span>' + label + "</span><span>" + L().ofN(used, cap) + (extra ? " · " + extra : "") + '</span></div><div class="mbar"><i style="width:' + pct + '%"></i></div></div>';
+}
+
+function lineItems(r) {
+  const t = L(), out = [[t.sub(pname(r.plan)), r.subInc]];
+  if (r.plan.bonus) out.push([t.bonusLine(sar(r.subInc)), t.free, true]);
+  if (r.extraBranches) out.push([t.extraB(r.extraBranches, sar(r.branchUnit)), r.branchCost]);
+  if (r.extraDevices) out.push([t.extraD(r.extraDevices, sar(SEAT_PRICE)), r.deviceCost]);
+  if (r.extraUsers) out.push(r.plan.paidSeats ? [t.extraU(r.extraUsers, sar(SEAT_PRICE)), r.userCost] : [t.extraUFree(r.extraUsers), t.free, true]);
+  HARDWARE.forEach(h => { const q = state.hw[h.id] || 0; if (q) out.push([q + " × " + t.hw[h.id][0], h.price * q]); });
+  if (r.packSaving) out.push([t.packLine, -r.packSaving, true]);
+  return out;
+}
+
+function summaryText(r) {
+  const t = L();
+  const hw = HARDWARE.filter(h => state.hw[h.id]).map(h => state.hw[h.id] + " × " + t.hw[h.id][0]);
+  const offers = [];
+  if (r.packSaving) offers.push(t.offStarter);
+  if (r.plan.bonus) offers.push(t.offBonus);
+  const comma = state.lang === "ar" ? "، " : ", ";
+  return [t.sumTitle,
+    t.sPlan + ": " + pname(r.plan),
+    t.sBranches + ": " + state.branches + (r.extraBranches ? " (" + r.extraBranches + " " + t.sExtra + ")" : ""),
+    t.sDev + ": " + state.devices + " · " + t.sUsers + ": " + state.users,
+    t.sFeat + ": " + (state.features.length ? state.features.map(id => t.feat[id][0]).join(comma) : t.none),
+    t.sSupp + ": " + t.supp[state.support],
+    t.sHw + ": " + (hw.length ? hw.join(comma) : t.none),
+    t.sOffers + ": " + (offers.length ? offers.join(comma) : t.none),
+    t.sTotal(state.vat) + ": " + sarText(r.totalInc)].join("\n");
+}
+
+function waLink(r) {
+  return "https://wa.me/" + PHONE_INTL + "?text=" + encodeURIComponent(L().waIntro + "\n\n" + summaryText(r));
+}
+
+async function copySummary() {
+  const text = summaryText(focusRow);
+  try { await navigator.clipboard.writeText(text); $("toast").textContent = L().copied; $("fallback").hidden = true; }
+  catch (e) { const ta = $("fallback"); ta.hidden = false; ta.value = text; ta.focus(); ta.select(); $("toast").textContent = L().selectCopy; }
+}
+
+function renderOffers() {
+  const t = L();
+  const ctl = PLANS.find(p => p.id === "control"), biz = PLANS.find(p => p.id === "business");
+  const pk = (kind, price, title, sub) => '<div class="pk"><div><b>' + sar(price) + "</b><small>" + title + (sub ? "<br>" + sub : "") + '</small></div>' +
+    '<button class="obtn' + (kind === "ezpos" ? " alt2" : "") + '" type="button" data-pack="' + kind + '" aria-pressed="' + packActive(kind) + '">' + (packActive(kind) ? t.packOn : t.usePack) + "</button></div>";
+  $("offers").innerHTML =
+    '<div class="offer"><div class="okick">' + t.oOffer + "</div><h3>" + t.oPackTitle + "</h3><p>" + t.oPackText + "</p>" +
+    pk("tablet", STARTER_PACK_TOTAL, t.oPackA, t.oSave(sar(STARTER_SAVING), sar(STARTER_LIST))) +
+    pk("ezpos", EZPOS_PACK_TOTAL, t.oPackBn, "") + "</div>" +
+    '<div class="offer"><div class="okick">' + t.oOffer + "</div><h3>" + t.oYearTitle + "</h3><p>" +
+    t.oYearText(sar(ctl.price * 115 / 100), sar(biz.price * 115 / 100)) + "</p>" +
+    '<div class="actions"><button class="obtn alt2" type="button" data-show="control">' + t.showPlan(pname(ctl)) + '</button><button class="obtn alt2" type="button" data-show="business">' + t.showPlan(pname(biz)) + "</button></div></div>";
+}
+
+function render() {
+  const t = L();
+  const res = evaluate(state);
+  const rec = res.pick || res.closest;
+  const row = (state.focus && res.rows.find(r => r.plan.id === state.focus)) || rec;
+  focusRow = row;
+  const p = row.plan;
+  const showReset = !!state.focus && row !== rec;
+  renderOffers();
+
+  const lines = lineItems(row).map(l => '<div class="line' + (l[2] ? " gift" : "") + '"><span>' + l[0] + "</span><b>" + (typeof l[1] === "string" ? l[1] : sar(l[1])) + "</b></div>").join("");
+  const incl = t.basics.map(b => '<li><span class="tick">✓</span><span>' + b[0] + "</span></li>").join("") +
+    FEATURE_IDS.map(id => p.features.includes(id)
+      ? '<li><span class="tick">✓</span><span>' + t.feat[id][0] + "</span></li>"
+      : '<li class="off"><span class="tick">–</span><span>' + t.notIn(t.feat[id][0], pname(p)) + "</span></li>").join("") +
+    '<li><span class="tick">✓</span><span>' + t.supp[p.support] + "</span></li>";
+  const actions = '<div class="actions"><a class="btn wa" href="' + waLink(row) + '" target="_blank" rel="noopener">' + t.waBtn + "</a>" +
+    '<button class="btn ghost" type="button" data-act="copy">' + t.copy + "</button>" +
+    (showReset ? '<button class="btn ghost" type="button" data-act="reset">' + t.back + "</button>" : "") + "</div>";
+
+  let kicker, para;
+  const ph = '<bdi dir="ltr">' + PHONE_SHOW + "</bdi>";
+  if (showReset) {
+    kicker = row.fits ? t.kSel : t.kSelNo;
+    para = row.fits ? t.selFits : t.short(gapList(row));
+  } else if (res.pick) {
+    kicker = t.kRec;
+    const spare = [];
+    if (p.devices > state.devices) spare.push(t.spareDev(p.devices - state.devices));
+    if (p.users > state.users) spare.push(t.spareUsr(p.users - state.users));
+    para = t.recText + (spare.length ? t.room(spare.join(t.and)) : "");
+  } else {
+    kicker = t.kNone;
+    para = t.noneText(pname(p), gapList(row), ph);
+  }
+  if (row.fits || showReset) para += p.paidSeats ? t.seatNotePaid(sar(SEAT_PRICE)) : t.seatNoteFree;
+
+  const usedD = Math.min(state.devices, p.devices), usedU = Math.min(state.users, p.users);
+  const extraD = state.devices > p.devices && p.paidSeats ? "+" + (state.devices - p.devices) : "";
+  const extraU = state.users > p.users ? "+" + (state.users - p.users) + (p.paidSeats ? "" : " " + t.free.toLowerCase()) : "";
+
+  $("verdict").innerHTML = '<div class="verdict' + (!row.fits ? " nofit" : "") + '"><div class="kicker">' + kicker + "</div>" +
+    "<h3>" + pname(p) + " " + palt(p) + (p.bonus ? ' <span class="pill ok">' + t.bonusPill + "</span>" : "") + "</h3>" +
+    '<div class="big"><b><span id="total">' + money(show(row.totalInc)) + "</span> " + t.cur + '</b><span class="per">' + t.perYear(state.vat) + "</span></div>" +
+    '<div class="lines">' + lines + "</div>" +
+    "<p>" + para + "</p>" +
+    '<div class="meters">' + meter(t.devices, usedD, p.devices, extraD) + meter(t.users, usedU, p.users, extraU) + "</div>" +
+    '<div class="kicker">' + t.includes + '</div><ul class="included">' + incl + "</ul>" + actions + "</div>";
+  tween($("total"), show(row.totalInc));
+  $("toast").textContent = "";
+  $("fallback").hidden = true;
+
+  const max = Math.max.apply(null, res.rows.map(r => r.totalInc));
+  $("plans").innerHTML = '<div class="plans-head"><h2>' + t.allPlans + "</h2><span>" + t.pickHint + "</span></div>" + res.rows.map(r => {
+    const q = r.plan, isPick = res.pick === r, isFocus = row === r;
+    const status = (r.fits
+      ? '<span class="pill ok">' + t.covers + "</span>" + (isPick ? '<span class="pill ok">' + t.best + "</span>" : "")
+      : '<span class="pill no">' + t.falls + '</span><div class="gaps">' + gapList(r) + "</div>") +
+      (q.bonus ? '<span class="pill gift">' + t.bonusPill + "</span>" : "");
+    return '<div class="plan' + (isFocus ? " focus" : "") + (r.fits ? "" : " nofit") + '" role="button" tabindex="0" data-id="' + q.id + '" aria-pressed="' + isFocus + '">' +
+      '<div><div class="name">' + pname(q) + palt(q) + '</div><div class="caps">' + t.caps(q) + "</div></div>" +
+      '<div class="detail">' + status + "</div>" +
+      '<div class="cost">' + sar(r.totalInc) + "<small>" + t.perYearShort + (q.bonus ? " · " + t.covers2 : "") + (r.extraBranches ? t.inclExtra(r.extraBranches) : "") + "</small></div>" +
+      '<div class="tbar"><i style="width:' + Math.round(Math.max(0, r.totalInc) / max * 100) + '%"></i></div></div>';
+  }).join("");
+
+  $("contact").innerHTML = "<div><h3>" + t.cTitle + "</h3><p>" + t.cText + '</p><div class="num"><bdi dir="ltr">' + PHONE_SHOW + "</bdi></div></div>" +
+    '<a class="btn wa" href="' + waLink(row) + '" target="_blank" rel="noopener">' + t.waBtn + "</a>";
+  $("foot").textContent = t.foot;
+}
+
+bindEvents();
+setLang(state.lang);
+</script>
+
+</body></html>
